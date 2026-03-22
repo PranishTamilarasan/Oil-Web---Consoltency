@@ -7,7 +7,7 @@ const createAdmin = async () => {
         await mongoose.connect(process.env.MONGODB_URI);
         console.log('Connected to MongoDB');
 
-        const existingAdmin = await User.findOne({ email: 'kavyasekar0099@gmail.com' });
+        const existingAdmin = await User.findOne({ email: 'admin@gmail.com' });
         if (existingAdmin) {
             // If exists, just update role to ADMIN
             existingAdmin.role = 'ADMIN';
@@ -17,18 +17,18 @@ const createAdmin = async () => {
         }
 
         const admin = new User({
-            name: 'Kavya Admin',
-            email: 'kavyasekar0099@gmail.com',
-            password: 'adminpassword123',
+            name: 'Admin User',
+            email: 'admin@gmail.com',
+            password: 'admin123',
             phone_number: '9999999999',
-            address: 'Mill Headquarters',
+            address: 'Admin Headquarters',
             role: 'ADMIN'
         });
 
         await admin.save();
         console.log('Admin user created successfully!');
-        console.log('Email: admin@mill.com');
-        console.log('Password: adminpassword123');
+        console.log('Email: admin@gmail.com');
+        console.log('Password: admin123');
         process.exit(0);
     } catch (err) {
         console.error('Error creating admin:', err);

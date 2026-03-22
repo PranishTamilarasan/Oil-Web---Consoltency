@@ -13,8 +13,11 @@ const Login = () => {
         const res = await login(form.e, form.p);
         if (res.success) {
             const savedUser = JSON.parse(localStorage.getItem('user'));
-            if (savedUser.role === 'USER') navigate('/');
-            else { navigate('/login'); setError('This portal is for customers only.'); }
+            if (savedUser.role === 'ADMIN') {
+                navigate('/admin');
+            } else {
+                navigate('/');
+            }
         } else {
             setError(res.message);
         }

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Signup = () => {
-    const [form, setForm] = useState({ name: '', email: '', phone_number: '', address: '', password: '', role: 'USER' });
+    const [form, setForm] = useState({ name: '', email: '', phone_number: '', address: '', password: '' });
     const { signup } = useAuth();
     const navigate = useNavigate();
     const [error, setError] = useState('');
@@ -50,19 +50,6 @@ const Signup = () => {
                     <div style={{ marginBottom: '16px' }}>
                         <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '8px' }}>Email Address</label>
                         <input className="input-field" type="email" placeholder="john@example.com" onChange={e => setForm({ ...form, email: e.target.value })} required />
-                    </div>
-
-                    <div style={{ marginBottom: '16px' }}>
-                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '8px' }}>Phone Number</label>
-                        <input className="input-field" type="tel" placeholder="+91 98765 43210" onChange={e => setForm({ ...form, phone: e.target.value })} required />
-                    </div>
-
-                    <div style={{ marginBottom: '16px' }}>
-                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '8px' }}>Account Type</label>
-                        <select className="input-field" value={form.role} onChange={e => setForm({ ...form, role: e.target.value })} required style={{ height: '54px' }}>
-                            <option value="customer">Customer</option>
-                            <option value="admin">Admin</option>
-                        </select>
                     </div>
 
                     <div style={{ marginBottom: '32px' }}>
