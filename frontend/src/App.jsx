@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
@@ -16,6 +18,8 @@ import ProfilePage from './pages/ProfilePage';
 import Login from './pages/Login';
 import AdminLogin from './pages/AdminLogin';
 import Signup from './pages/Signup';
+import DebugLogin from './pages/DebugLogin';
+import TestPage from './pages/TestPage';
 
 // Admin Components
 import AdminLayout from './admin/AdminLayout';
@@ -27,36 +31,37 @@ import AdminEquipment from './admin/AdminEquipment';
 import AIReports from './admin/AIReports';
 
 export default function App() {
-    const [cart, setCart] = useState([]);
-    const onAdd = (p) => setCart([...cart, p]);
-    const onRemove = (idx) => setCart(cart.filter((_, i) => i !== idx));
-    const onClear = () => setCart([]);
-
     return (
-        <AuthProvider>
-            <Router>
-                <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/admin-login" element={<AdminLogin />} />
-                    <Route path="/signup" element={<Signup />} />
+        <ErrorBoundary>
+            <AuthProvider>
+                <CartProvider>
+                    <Router>
+                        <Routes>
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/admin-login" element={<AdminLogin />} />
+                            <Route path="/signup" element={<Signup />} />
+                            <Route path="/debug" element={<><Navbar /><DebugLogin /><Footer /></>} />
+                            <Route path="/test" element={<><Navbar /><TestPage /><Footer /></>} />
 
-                    <Route path="/" element={<><Navbar cartCount={cart.length} /><HomePage onAdd={onAdd} /><Footer /></>} />
-                    <Route path="/products" element={<><Navbar cartCount={cart.length} /><ProductsPage onAdd={onAdd} /><Footer /></>} />
-                    <Route path="/booking" element={<><Navbar cartCount={cart.length} /><BookingPage /><Footer /></>} />
-                    <Route path="/rental" element={<><Navbar cartCount={cart.length} /><RentalPage /><Footer /></>} />
-                    <Route path="/cart" element={<><Navbar cartCount={cart.length} /><CartPage cart={cart} onRemove={onRemove} onClear={onClear} /><Footer /></>} />
-                    <Route path="/profile" element={<><Navbar cartCount={cart.length} /><ProfilePage /><Footer /></>} />
+                            <Route path="/" element={<><Navbar /><HomePage /><Footer /></>} />
+                            <Route path="/products" element={<><Navbar /><ProductsPage /><Footer /></>} />
+                            <Route path="/booking" element={<><Navbar /><BookingPage /><Footer /></>} />
+                            <Route path="/rental" element={<><Navbar /><RentalPage /><Footer /></>} />
+                            <Route path="/cart" element={<><Navbar /><CartPage /><Footer /></>} />
+                            <Route path="/profile" element={<><Navbar /><ProfilePage /><Footer /></>} />
 
-                    <Route path="/admin" element={<ProtectedRoute role="ADMIN"><AdminLayout><AdminDashboard /></AdminLayout></ProtectedRoute>} />
-                    <Route path="/admin/inventory" element={<ProtectedRoute role="ADMIN"><AdminLayout><AdminInventory /></AdminLayout></ProtectedRoute>} />
-                    <Route path="/admin/orders" element={<ProtectedRoute role="ADMIN"><AdminLayout><AdminOrders /></AdminLayout></ProtectedRoute>} />
-                    <Route path="/admin/bookings" element={<ProtectedRoute role="ADMIN"><AdminLayout><AdminBookings /></AdminLayout></ProtectedRoute>} />
-                    <Route path="/admin/equipment" element={<ProtectedRoute role="ADMIN"><AdminLayout><AdminEquipment /></AdminLayout></ProtectedRoute>} />
-                    <Route path="/admin/reports" element={<ProtectedRoute role="ADMIN"><AdminLayout><AIReports /></AdminLayout></ProtectedRoute>} />
+                            <Route path="/admin" element={<ProtectedRoute role="ADMIN"><ErrorBoundary><AdminLayout><AdminDashboard /></AdminLayout></ErrorBoundary></ProtectedRoute>} />
+                            <Route path="/admin/inventory" element={<ProtectedRoute role="ADMIN"><ErrorBoundary><AdminLayout><AdminInventory /></AdminLayout></ErrorBoundary></ProtectedRoute>} />
+                            <Route path="/admin/orders" element={<ProtectedRoute role="ADMIN"><ErrorBoundary><AdminLayout><AdminOrders /></AdminLayout></ErrorBoundary></ProtectedRoute>} />
+                            <Route path="/admin/bookings" element={<ProtectedRoute role="ADMIN"><ErrorBoundary><AdminLayout><AdminBookings /></AdminLayout></ErrorBoundary></ProtectedRoute>} />
+                            <Route path="/admin/equipment" element={<ProtectedRoute role="ADMIN"><ErrorBoundary><AdminLayout><AdminEquipment /></AdminLayout></ErrorBoundary></ProtectedRoute>} />
+                            <Route path="/admin/reports" element={<ProtectedRoute role="ADMIN"><ErrorBoundary><AdminLayout><AIReports /></AdminLayout></ErrorBoundary></ProtectedRoute>} />
 
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-            </Router>
-        </AuthProvider>
+                            <Route path="*" element={<Navigate to="/" replace />} />
+                        </Routes>
+                    </Router>
+                </CartProvider>
+            </AuthProvider>
+        </ErrorBoundary>
     );
 }

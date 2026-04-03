@@ -3,7 +3,7 @@ import { Brain, TrendingUp, Users, Calendar, Download, RefreshCw, FileText, BarC
 import { useAuth } from '../context/AuthContext';
 
 const AIReports = () => {
-    const { user } = useAuth();
+    const { user, authorizedFetch } = useAuth();
     const [summary, setSummary] = useState('');
     const [detailedReport, setDetailedReport] = useState('');
     const [insights, setInsights] = useState('');
@@ -33,22 +33,22 @@ const AIReports = () => {
         setLoading(true);
         setError('');
         try {
-            const response = await fetch('http://localhost:5000/api/admin/ai/summary', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
+            const response = await authorizedFetch('http://localhost:5000/api/admin/ai/summary', {
+                method: 'POST'
             });
 
-            const data = await response.json();
-            if (response.ok) {
-                setSummary(data.summary);
+            console.log('🤖 AI Summary response:', response);
+
+            if (response.success) {
+                setSummary(response.data.summary);
+                console.log('✅ AI Summary generated');
             } else {
-                setError(data.message || 'Failed to generate summary');
+                setError(response.message || 'Failed to generate summary');
+                console.log('❌ AI Summary failed:', response.message);
             }
         } catch (err) {
             setError('Network error. Please try again.');
+            console.error('🚨 AI Summary error:', err);
         } finally {
             setLoading(false);
         }
@@ -59,22 +59,22 @@ const AIReports = () => {
         setLoading(true);
         setError('');
         try {
-            const response = await fetch(`http://localhost:5000/api/admin/ai/detailed?reportType=${reportType}&timeRange=${timeRange}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
+            const response = await authorizedFetch(`http://localhost:5000/api/admin/ai/detailed?reportType=${reportType}&timeRange=${timeRange}`, {
+                method: 'POST'
             });
 
-            const data = await response.json();
-            if (response.ok) {
-                setDetailedReport(data.report);
+            console.log('🤖 AI Detailed Report response:', response);
+
+            if (response.success) {
+                setDetailedReport(response.data.report);
+                console.log('✅ AI Detailed Report generated');
             } else {
-                setError(data.message || 'Failed to generate report');
+                setError(response.message || 'Failed to generate report');
+                console.log('❌ AI Detailed Report failed:', response.message);
             }
         } catch (err) {
             setError('Network error. Please try again.');
+            console.error('🚨 AI Detailed Report error:', err);
         } finally {
             setLoading(false);
         }
@@ -85,21 +85,20 @@ const AIReports = () => {
         setLoading(true);
         setError('');
         try {
-            const response = await fetch(`http://localhost:5000/api/admin/ai/insights?metric=${selectedMetric}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const response = await authorizedFetch(`http://localhost:5000/api/admin/ai/insights?metric=${selectedMetric}`);
 
-            const data = await response.json();
-            if (response.ok) {
-                setInsights(data.insights);
+            console.log('🤖 AI Insights response:', response);
+
+            if (response.success) {
+                setInsights(response.data.insights);
+                console.log('✅ AI Insights generated');
             } else {
-                setError(data.message || 'Failed to generate insights');
+                setError(response.message || 'Failed to generate insights');
+                console.log('❌ AI Insights failed:', response.message);
             }
         } catch (err) {
             setError('Network error. Please try again.');
+            console.error('🚨 AI Insights error:', err);
         } finally {
             setLoading(false);
         }

@@ -2,9 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 
-const Navbar = ({ cartCount }) => {
+const Navbar = () => {
     const { user, logout } = useAuth();
+    const { getCartCount } = useCart();
+    const cartCount = getCartCount();
     return (
         <nav className="navbar">
             <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>

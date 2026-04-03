@@ -10,12 +10,21 @@ const Login = () => {
 
     const handle = async (e) => {
         e.preventDefault();
+        console.log('🔐 Login attempt:', form.e);
         const res = await login(form.e, form.p);
+        console.log('📦 Login response:', res);
+        
         if (res.success) {
             const savedUser = JSON.parse(localStorage.getItem('user'));
+            console.log('👤 Saved user data:', savedUser);
+            console.log('🔑 User role:', savedUser.role);
+            console.log('🔍 Role check:', savedUser.role === 'ADMIN');
+            
             if (savedUser.role === 'ADMIN') {
+                console.log('🚀 Navigating to admin dashboard');
                 navigate('/admin');
             } else {
+                console.log('🏠 Navigating to home');
                 navigate('/');
             }
         } else {

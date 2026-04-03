@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Filter, Search, Star, Package } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 
-const ProductsPage = ({ onAdd }) => {
+const ProductsPage = () => {
+    const { addToCart } = useCart();
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -201,7 +203,15 @@ const ProductsPage = ({ onAdd }) => {
                         </div>
                     </div>
                     <button
-                        onClick={() => onAdd(product)}
+                        onClick={() => {
+                            const cartItem = {
+                                ...product,
+                                quantity: 1,
+                                selectedSize: product.sizes?.[0] || 'N/A',
+                                _id: product._id || product.id
+                            };
+                            addToCart(cartItem);
+                        }}
                         style={{
                             background: 'var(--primary)',
                             color: 'white',

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Orders API Debug Tool</h1>
+    
+    <div class="container">
+        <h2>Step 1: Get Admin Token</h2>
+        <p>Login as admin to get a token for testing</p>
+        <input type="email" id="adminEmail" placeholder="admin@gmail.com" value="admin@gmail.com">
+        <input type="password" id="adminPassword" placeholder="password" value="admin123">
+        <button onclick="loginAdmin()">Login Admin</button>
+        <div id="loginStatus"></div>
+    </div>
+
+    <div class="container">
+        <h2>Step 2: Test Orders API</h2>
+        <button onclick="testMyOrders()" id="testOrdersBtn" disabled>Test /api/orders/my</button>
+        <button onclick="testAllOrders()" id="testAllOrdersBtn" disabled>Test /api/orders/all</button>
+        <div id="apiStatus"></div>
+        <pre id="apiResponse"></pre>
+    </div>
+
+    <div class="container">
+        <h2>Step 3: Create Test Order</h2>
+        <button onclick="createTestOrder()" id="createOrderBtn" disabled>Create Test Order</button>
+        <div id="createStatus"></div>
+        <pre id="createResponse"></pre>
+    </div>
+
+    <script>
+        let authToken = '';
+
+        async function loginAdmin() {
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            const statusDiv = document.getElementById('loginStatus');
+
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    authToken = data.token;
+                    statusDiv.innerHTML = `<div class="success">✅ Login successful! Token: ${authToken.substring(0, 50)}...</div>`;
+                    document.getElementById('testOrdersBtn').disabled = false;
+                    document.getElementById('testAllOrdersBtn').disabled = false;
+                    document.getElementById('createOrderBtn').disabled = false;
+                } else {
+                    statusDiv.innerHTML = `<div class="error">❌ Login failed: ${data.message}</div>`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Login error: ${error.message}</div>`;
+            }
+        }
+
+        async function testMyOrders() {
+            const statusDiv = document.getElementById('apiStatus');
+            const responseDiv = document.getElementById('apiResponse');
+
+            try {
+                statusDiv.innerHTML = '<div class="info">🔄 Testing /api/orders/my...</div>';
+                
+                const response = await fetch('http://localhost:5000/api/orders/my', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                const data = await response.json();
+                
+                responseDiv.textContent = JSON.stringify(data, null, 2);
+                
+                if (response.ok) {
+                    statusDiv.innerHTML = `<div class="success">✅ Success! Found ${Array.isArray(data) ? data.length : 0} orders</div>`;
+                } else {
+                    statusDiv.innerHTML = `<div class="error">❌ Failed: ${response.status} - ${data.message}</div>`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                responseDiv.textContent = error.message;
+            }
+        }
+
+        async function testAllOrders() {
+            const statusDiv = document.getElementById('apiStatus');
+            const responseDiv = document.getElementById('apiResponse');
+
+            try {
+                statusDiv.innerHTML = '<div class="info">🔄 Testing /api/orders/all...</div>';
+                
+                const response = await fetch('http://localhost:5000/api/orders/all', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                const data = await response.json();
+                
+                responseDiv.textContent = JSON.stringify(data, null, 2);
+                
+                if (response.ok) {
+                    statusDiv.innerHTML = `<div class="success">✅ Success! Found ${Array.isArray(data) ? data.length : 0} orders</div>`;
+                } else {
+                    statusDiv.innerHTML = `<div class="error">❌ Failed: ${response.status} - ${data.message}</div>`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                responseDiv.textContent = error.message;
+            }
+        }
+
+        async function createTestOrder() {
+            const statusDiv = document.getElementById('createStatus');
+            const responseDiv = document.getElementById('createResponse');
+
+            try {
+                statusDiv.innerHTML = '<div class="info">🔄 Creating test order...</div>';
+                
+                const orderData = {
+                    products: [
+                        { product: 'test-product-1', quantity: 2, priceAtTime: 299 },
+                        { product: 'test-product-2', quantity: 1, priceAtTime: 399 }
+                    ],
+                    total_amount: 897,
+                    shippingAddress: {
+                        street: 'Main Mill Road',
+                        city: 'Tiruppur',
+                        state: 'Tamil Nadu',
+                        zip: '641601',
+                        phone: '9999999999'
+                    }
+                };
+
+                const response = await fetch('http://localhost:5000/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                const data = await response.json();
+                
+                responseDiv.textContent = JSON.stringify(data, null, 2);
+                
+                if (response.ok) {
+                    statusDiv.innerHTML = `<div class="success">✅ Order created! ID: ${data.order?._id}</div>`;
+                    // Test orders again after creation
+                    setTimeout(testMyOrders, 1000);
+                } else {
+                    statusDiv.innerHTML = `<div class="error">❌ Failed: ${response.status} - ${data.message}</div>`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                responseDiv.textContent = error.message;
+            }
+        }
+
+        // Auto-login on page load
+        window.onload = function() {
+            console.log('🧪 Orders API Debug Tool loaded');
+            console.log('📝 Instructions:');
+            console.log('1. Make sure backend is running on localhost:5000');
+            console.log('2. Click "Login Admin" to get token');
+            console.log('3. Test the API endpoints');
+            console.log('4. Create test orders if needed');
+        };
+    </script>
+</body>
+</html>

@@ -4,7 +4,13 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node tests/run-all-tests.js",
+    "test:admin": "node tests/createAdmin.js",
+    "test:login": "node tests/simple-login-test.js",
+    "test:dashboard": "node tests/test-dashboard-api.js",
+    "test:populate": "node tests/populate-dashboard.js",
+    "test:payment": "node tests/test-dummy-payment.js",
+    "test:orders": "node tests/test-user-orders.js"
   },
   "keywords": [],
   "author": "",

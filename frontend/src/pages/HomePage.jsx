@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Droplets, Package, Calendar, ShoppingCart, Star, ChevronRight } from 'lucide-react';
+import { ShoppingCart, ChevronRight, Star, Shield, Truck, Clock, Droplets, Package, Calendar } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 
-const HomePage = ({ onAdd }) => {
+const HomePage = () => {
+    const { addToCart } = useCart();
     const [featuredProducts, setFeaturedProducts] = useState([]);
 
     useEffect(() => {
@@ -173,19 +175,30 @@ const HomePage = ({ onAdd }) => {
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <span style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--primary)' }}>₹{product.price}</span>
                                         <button
-                                            onClick={() => onAdd(product)}
+                                            onClick={() => {
+                                                const cartItem = {
+                                                    ...product,
+                                                    quantity: 1,
+                                                    selectedSize: product.sizes?.[0] || 'N/A',
+                                                    _id: product._id || product.id
+                                                };
+                                                addToCart(cartItem);
+                                            }}
                                             style={{
                                                 background: 'var(--primary)',
                                                 color: 'white',
                                                 border: 'none',
-                                                padding: '10px 20px',
+                                                padding: '12px 20px',
                                                 borderRadius: '8px',
                                                 fontWeight: 600,
                                                 cursor: 'pointer',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                gap: '6px'
+                                                gap: '6px',
+                                                transition: 'background 0.3s ease'
                                             }}
+                                            onMouseOver={(e) => e.target.style.background = 'var(--primary-glow)'}
+                                            onMouseOut={(e) => e.target.style.background = 'var(--primary)'}
                                         >
                                             <ShoppingCart size={16} />
                                             Add to Cart

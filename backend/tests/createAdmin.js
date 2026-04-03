@@ -1,6 +1,5 @@
 const User = require('./models/User');
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const createAdmin = async () => {
@@ -11,13 +10,11 @@ const createAdmin = async () => {
         // Delete any existing admin with this email
         await User.deleteOne({ email: 'admin@gmail.com' });
 
-        // Create fresh admin
-        const hashedPassword = await bcrypt.hash('admin123', 12);
-        
+        // Create fresh admin - let the pre-save hook handle hashing
         const admin = new User({
             name: 'Admin User',
             email: 'admin@gmail.com',
-            password: hashedPassword,
+            password: 'admin123', // Plain password - will be hashed by pre-save hook
             phone_number: '9999999999',
             address: 'Admin Headquarters',
             role: 'ADMIN'

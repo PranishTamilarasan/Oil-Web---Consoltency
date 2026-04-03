@@ -20,6 +20,38 @@ try {
     console.log('❌ OpenRouter SDK error:', error.message);
 }
 
+// Helper function to try multiple models with fallback
+const tryModels = async (openrouter, messages, temperature = 0.7, maxTokens = 1000) => {
+    const models = [
+        "openai/gpt-oss-120b:free",
+        "anthropic/claude-3.5-haiku",
+        "openai/gpt-4o-mini", 
+        "meta-llama/llama-3.1-8b-instruct:free",
+        "meta-llama/llama-3.2-3b-instruct:free"
+    ];
+    
+    for (const model of models) {
+        try {
+            console.log(`Trying model: ${model}`);
+            const response = await openrouter.chat.send({
+                chatGenerationParams: {
+                    model: model,
+                    messages: messages,
+                    temperature: temperature,
+                    max_tokens: maxTokens
+                }
+            });
+            console.log(`✅ Success with model: ${model}`);
+            return response;
+        } catch (modelError) {
+            console.log(`❌ Model ${model} failed:`, modelError.message);
+            if (model === models[models.length - 1]) {
+                throw modelError; // Re-throw the last error
+            }
+        }
+    }
+};
+
 // Get dashboard data for AI analysis
 const getDashboardData = async () => {
     const totalUsers = await User.countDocuments({ role: 'USER' });
@@ -104,19 +136,12 @@ Please provide:
 
 Keep it professional, concise, and actionable. Format as a structured report.`;
 
-        const response = await openrouter.chat.send({
-            chatGenerationParams: {
-                model: "stepfun/step-3.5-flash:free",
-                messages: [
-                    {
-                        role: "user",
-                        content: prompt
-                    }
-                ],
-                temperature: 0.7,
-                max_tokens: 1000
+        const response = await tryModels(openrouter, [
+            {
+                role: "user",
+                content: prompt
             }
-        });
+        ]);
 
         res.json({
             summary: response.choices[0].message.content,
@@ -211,19 +236,12 @@ Create a professional report with these sections:
 
 Include specific numbers, percentages, and actionable insights. Format in markdown for easy reading.`;
 
-        const response = await openrouter.chat.send({
-            chatGenerationParams: {
-                model: "stepfun/step-3.5-flash:free",
-                messages: [
-                    {
-                        role: "user",
-                        content: prompt
-                    }
-                ],
-                temperature: 0.7,
-                max_tokens: 1000
+        const response = await tryModels(openrouter, [
+            {
+                role: "user",
+                content: prompt
             }
-        });
+        ]);
 
         res.json({
             report: response.choices[0].message.content,
@@ -270,19 +288,12 @@ exports.getInsights = async (req, res) => {
                 prompt = `Provide business insights from this dashboard data: ${JSON.stringify(dashboardData, null, 2)}. Focus on key metrics and actionable recommendations.`;
         }
 
-        const response = await openrouter.chat.send({
-            chatGenerationParams: {
-                model: "stepfun/step-3.5-flash:free",
-                messages: [
-                    {
-                        role: "user",
-                        content: prompt
-                    }
-                ],
-                temperature: 0.7,
-                max_tokens: 1000
+        const response = await tryModels(openrouter, [
+            {
+                role: "user",
+                content: prompt
             }
-        });
+        ]);
 
         res.json({
             insights: response.choices[0].message.content,
