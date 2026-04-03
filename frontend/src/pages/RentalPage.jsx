@@ -131,29 +131,31 @@ const RentalPage = () => {
         setLoading(true);
         setError('');
 
-        try {
-            // Mock API call - replace with actual API
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            // Simulate success
-            setSuccess(true);
-            setBookingData({
-                equipmentId: '',
-                name: '',
-                email: '',
-                phone: '',
-                startDate: '',
-                endDate: '',
-                timeSlot: '',
-                message: ''
-            });
-            setSelectedEquipment(null);
-        } catch (err) {
-            setError('Failed to submit rental request. Please try again.');
-        } finally {
-            setLoading(false);
-        }
-    };
+     try {
+        // For now, use mock data since rental API doesn't exist yet
+        // TODO: Create rental API in backend
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Simulate success
+        setSuccess(true);
+        setBookingData({
+            equipmentId: '',
+            name: '',
+            email: '',
+            phone: '',
+            startDate: '',
+            endDate: '',
+            timeSlot: '',
+            message: ''
+        });
+        setSelectedEquipment(null);
+
+    } catch (err) {
+        setError(err.message || 'Failed to submit rental request. Please try again.');
+    } finally {
+        setLoading(false);
+    }
+};
 
     // Get tomorrow's date as minimum booking date
     const tomorrow = new Date();

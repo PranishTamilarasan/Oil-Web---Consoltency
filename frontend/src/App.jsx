@@ -24,6 +24,7 @@ import AdminInventory from './admin/AdminInventory';
 import AdminOrders from './admin/AdminOrders';
 import AdminBookings from './admin/AdminBookings';
 import AdminEquipment from './admin/AdminEquipment';
+import AIReports from './admin/AIReports';
 
 export default function App() {
     const [cart, setCart] = useState([]);
@@ -51,7 +52,7 @@ export default function App() {
                     <Route path="/admin/orders" element={<ProtectedRoute role="ADMIN"><AdminLayout><AdminOrders /></AdminLayout></ProtectedRoute>} />
                     <Route path="/admin/bookings" element={<ProtectedRoute role="ADMIN"><AdminLayout><AdminBookings /></AdminLayout></ProtectedRoute>} />
                     <Route path="/admin/equipment" element={<ProtectedRoute role="ADMIN"><AdminLayout><AdminEquipment /></AdminLayout></ProtectedRoute>} />
-                    <Route path="/admin/reports" element={<ProtectedRoute role="ADMIN"><AdminLayout><AdminDashboard /></AdminLayout></ProtectedRoute>} />
+                    <Route path="/admin/reports" element={<ProtectedRoute role="ADMIN"><AdminLayout><AIReports /></AdminLayout></ProtectedRoute>} />
 
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
